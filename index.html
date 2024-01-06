@@ -7,10 +7,31 @@
 		<script src="./script.js"></script>
 		<style>
 			#container {
+				min-width: 800px;
+				width: 50vw;
 				display: flex;
 				flex-direction: column;
 				align-items: center;
 				margin: 0;
+			}
+
+			#toggleButton {
+				padding: 10px;
+				cursor: pointer;
+				background-color: #888888;
+				color: #fff;
+				border: none;
+				border-radius: 5px;
+				outline: none;
+				margin-bottom: 10px;
+				position: absolute;
+				top: 30px;
+				left: 50px;
+			}
+
+			/* Style for the "active" state */
+			#toggleButton.active {
+				background-color: #2ecc71;
 			}
 
 			#barchart-container,
@@ -18,34 +39,73 @@
 				padding: 20px;
 				border: 1px solid black;
 				margin: 10px;
+				min-width: 800px;
+
 				width: 50vw;
 			}
 
 			#my_dataviz {
 				text-align: center;
 			}
+
+			#buttonsContainer {
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				justify-content: start;
+				align-items: start;
+				row-gap: 50px;
+			}
+			.center {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.variable {
+				padding: 8px 12px;
+				cursor: pointer;
+				border: black 1px solid;
+				border-radius: 4px;
+				transition: all 0.3s ease;
+			}
+			.variable:hover {
+				scale: 0.95;
+			}
 		</style>
 	</head>
 
 	<body onload="main()">
 		<h1 style="text-align: center">Visualisation Maladies Chroniques</h1>
-		<div id="container">
-			<div id="barchart-container">
-				<div id="my_dataviz"></div>
+		<div class="center">
+			<div id="container">
+				<button id="toggleButton" onclick="toggleButton()">
+					Toggle Color Blind
+				</button>
 				<div id="my_buttons">
-					<button id="activite_physique">Activite Physique</button>
-					<button id="frequence_consommation_fruit">
+					<button class="variable" id="activite_physique">
+						Activite Physique
+					</button>
+					<button class="variable" id="frequence_consommation_fruit">
 						Consommation de fruit
 					</button>
-					<button id="frequence_consommation_legume">
+					<button class="variable" id="frequence_consommation_legume">
 						Consommation de legumes
 					</button>
-					<button id="activite">Activite Occupé</button>
-					<button id="age">Age</button>
+					<button class="variable" id="activite">
+						Activite Occupé
+					</button>
+					<button class="variable" id="age">Age</button>
+					<button class="variable" id="matiere_grasse">
+						Matiere grasse
+					</button>
 				</div>
-			</div>
-			<div id="pie-container">
-				<div id="piediv"></div>
+				<div id="barchart-container">
+					<div id="my_dataviz"></div>
+				</div>
+				<div id="pie-container">
+					<div id="piediv"></div>
+				</div>
 			</div>
 		</div>
 	</body>

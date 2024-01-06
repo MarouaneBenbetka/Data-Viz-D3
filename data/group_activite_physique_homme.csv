@@ -1,4 +1,4 @@
-group,HTA,asthme,aucune maladie,autres,diabete
-Fréquente >4 fois/semaine,1,0,4,1,6
-occasionnellement 2-3 fois/semaine,7,0,11,1,5
-rarement 0-1 fois/semaine,6,2,9,1,5
+activite_physique,HTA,asthme,aucune maladie,autres,diabete
+Fréquente,1,0,4,1,6
+occasionnellement,7,0,11,1,5
+rarement,6,2,9,1,5

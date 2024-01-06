@@ -1,4 +1,4 @@
-group,HTA,asthme,aucune maladie,autres,diabete
-Fréquente >4 fois/semaine,4,1,7,2,10
-occasionnellement 2-3 fois/semaine,8,2,4,0,8
-rarement 0-1 fois/semaine,0,1,0,0,0
+frequence_consommation_fruit,HTA,asthme,aucune maladie,autres,diabete
+Fréquente,4,1,7,2,10
+occasionnellement,8,2,4,0,8
+rarement,0,1,0,0,0

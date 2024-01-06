@@ -1,6 +1,5 @@
-group,HTA,asthme,aucune maladie,autres,diabete
-Beurre ou beurre allégé,0,0,1,0,1
+matiere_grasse,HTA,asthme,aucune maladie,autres,diabete
+Beurre,0,0,3,0,4
 Huile végétale,13,2,20,3,9
-Margarine,0,0,2,0,3
 Zit ziton,0,0,1,0,0
 autre,1,0,0,0,3

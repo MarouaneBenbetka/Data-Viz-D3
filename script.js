@@ -1,6 +1,17 @@
 const dataPath = "./data";
 
+const colorsNormal = ["#FF5733", "#66CCCC", "#99CC99", "#9966CC", "#FF9933"];
+
+const colorsBlindPeople = [
+	"#6A8A82",
+	"#4A90E2",
+	"#CCCCCC",
+	"#FFD700",
+	"#FF8C00",
+];
+
 function main() {
+	let colorBlind = false;
 	const margin = { top: 10, right: 250, bottom: 50, left: 50 },
 		width = 1000 - margin.left - margin.right,
 		height = 550 - margin.top - margin.bottom;
@@ -53,6 +64,9 @@ function main() {
 	const button3 = document.getElementById("frequence_consommation_legume");
 	const button4 = document.getElementById("activite");
 	const button5 = document.getElementById("age");
+	const button6 = document.getElementById("matiere_grasse");
+
+	const colorToggleButton = document.getElementById("toggleButton");
 
 	//Legend for the x axis
 	svg.append("text")
@@ -77,28 +91,35 @@ function main() {
 			`${dataPath}/group_${event.target.id}_femme.csv`,
 			`${dataPath}/group_${event.target.id}_homme.csv`,
 		];
-		console.log("path", path);
+		console.log(event.target.id);
 		switch (event.target.id) {
-			case "activite_pyhsique":
+			case "activite_physique":
 				ylabel.text(
 					"Distribution des personnes selon l'activité physique"
 				);
 				break;
-			case "consommation_fruit":
+			case "frequence_consommation_fruit":
 				ylabel.text(
-					"Distribution des personnes selon la consommation des fruits "
+					"Distribution des personnes selon la frequence du consommation des fruits "
 				);
 				break;
-			case "consommation_legume":
+			case "frequence_consommation_legume":
 				ylabel.text(
-					"Distribution des personnes selon la consommation des legumes"
+					"Distribution des personnes selon la frequence consommation des legumes"
 				);
 				break;
 			case "activite":
-				ylabel.text("Distribution des personnes selon l'activite");
+				ylabel.text(
+					"Distribution des personnes selon l'activite occupée"
+				);
 				break;
 			case "age":
-				ylabel.text("Distribution des personnes selon l'activite");
+				ylabel.text("Distribution des personnes selon l'age");
+				break;
+			case "matiere_grasse":
+				ylabel.text(
+					"Distribution des personnes selon la matiere grasse"
+				);
 				break;
 			default:
 				ylabel.text("Distribution des personnes selon l'activite");
@@ -146,7 +167,7 @@ function main() {
 					}
 					return total;
 				};
-				console.log(data);
+				// console.log(data);
 				// Call the function with your array of objects
 				const max_count = findMaxValue(data);
 				const y = d3
@@ -160,13 +181,7 @@ function main() {
 				const color = d3
 					.scaleOrdinal()
 					.domain(subgroups)
-					.range([
-						"#3498db",
-						"#e74c3c",
-						"#e67e22",
-						"#95a5a6",
-						"#2ecc71",
-					]);
+					.range(colorBlind ? colorsBlindPeople : colorsNormal);
 
 				//stack the data? --> stack per subgroup
 				const stackedData = d3.stack().keys(subgroups)(data);
@@ -187,7 +202,7 @@ function main() {
 					.attr(
 						"x",
 						(d) =>
-							x(d.data.group) +
+							x(d.data[data.columns[0]]) +
 							index * 5 +
 							(index * x.bandwidth()) / 2
 					)
@@ -288,13 +303,26 @@ function main() {
 				for (let i = 0; i < data.length; i++) {
 					temp = data[i];
 					groupname = temp.group;
-					console.log(temp);
-					console.log(groupname);
+
 					delete temp.group;
 					piecreator(groupname, temp, i);
 				}
 			});
 		});
+	}
+
+	function toggleButton() {
+		// Toggle the "active" class on button click
+		colorToggleButton.classList.toggle("active");
+
+		// You can add additional functionality or actions here based on the button state
+		if (colorToggleButton.classList.contains("active")) {
+			colorBlind = true;
+		} else {
+			colorBlind = false;
+		}
+
+		button1.click();
 	}
 
 	//We attach to the buttons the event handler for changing between health states
@@ -303,7 +331,8 @@ function main() {
 	button3.addEventListener("click", handleClick);
 	button4.addEventListener("click", handleClick);
 	button5.addEventListener("click", handleClick);
-
+	button6.addEventListener("click", handleClick);
+	colorToggleButton.addEventListener("click", toggleButton);
 	//We trigger the event click for the first button to generate a chart when landing on the visualisation
 	button1.click();
 }
