@@ -1,0 +1,11 @@
+frequence_consommation_fruit,maladie_chronique_famille,count
+Fréquente,HTA,4
+Fréquente,asthme,1
+Fréquente,aucune maladie,7
+Fréquente,autres,2
+Fréquente,diabete,10
+occasionnellement,HTA,8
+occasionnellement,asthme,2
+occasionnellement,aucune maladie,4
+occasionnellement,diabete,8
+rarement,asthme,1
