@@ -1,4 +1,4 @@
-const dataPath = "../data-cleaning";
+const dataPath = "./data";
 
 function main() {
 	const margin = { top: 10, right: 250, bottom: 50, left: 50 },
@@ -48,9 +48,11 @@ function main() {
 		.style("font-family", "Arial");
 
 	//We create the buttons to switch between data
-	const button1 = document.getElementById("button1");
-	const button2 = document.getElementById("button2");
-	const button3 = document.getElementById("button3");
+	const button1 = document.getElementById("ActivitePhysique");
+	const button2 = document.getElementById("ConsommationFruit");
+	const button3 = document.getElementById("ConsommationLegumes");
+	const button4 = document.getElementById("Age");
+	const button5 = document.getElementById("Activite");
 
 	//Legend for the x axis
 	svg.append("text")
@@ -73,7 +75,7 @@ function main() {
 	function handleClick(event) {
 		var path;
 		switch (event.target.id) {
-			case "button1":
+			case "ActivitePhysique":
 				path = [
 					`${dataPath}/group_activite_physique_femme.csv`,
 					`${dataPath}/group_activite_physique_homme.csv`,
@@ -82,7 +84,7 @@ function main() {
 					"Distribution des personnes selon l'activité physique"
 				);
 				break;
-			case "button2":
+			case "ConsommationFruit":
 				path = [
 					`${dataPath}/group_frequence_consommation_fruit_femme.csv`,
 					`${dataPath}/group_frequence_consommation_fruit_homme.csv`,
@@ -91,7 +93,7 @@ function main() {
 					"Distribution des personnes selon la consommation des fruits "
 				);
 				break;
-			case "button3":
+			case "ConsommationLegumes":
 				path = [
 					`${dataPath}/group_frequence_consommation_legume_femme.csv`,
 					`${dataPath}/group_frequence_consommation_legume_homme.csv`,
@@ -100,14 +102,34 @@ function main() {
 					"Distribution des personnes selon la consommation des legumes"
 				);
 				break;
+			case "Fumeur":
+				path = [
+					`${dataPath}/group_fumeur_femme.csv`,
+					`${dataPath}/group_fumeur_homme.csv`,
+				];
+				ylabel.text("Distribution des personnes selon fumeur ou pas");
+				break;
+			case "Activite":
+				path = [
+					`${dataPath}/group_activite_femme.csv`,
+					`${dataPath}/group_activite_homme.csv`,
+				];
+				ylabel.text("Distribution des personnes selon l'activite");
+				break;
+			case "Age":
+				path = [
+					`${dataPath}/group_age_femme.csv`,
+					`${dataPath}/group_age_homme.csv`,
+				];
+				ylabel.text("Distribution des personnes selon l'activite");
+				break;
 			default:
 				path = [
-					`${dataPath}/group_frequence_consommation_legume_femme.csv`,
-					`${dataPath}/group_frequence_consommation_legume_homme.csv`,
+					`${dataPath}/group_activite_femme.csv`,
+					`${dataPath}/group_activite_homme.csv`,
 				];
-				ylabel.text(
-					"distribution des personnes selon la consommation des legumes"
-				);
+				ylabel.text("Distribution des personnes selon l'activite");
+				break;
 		}
 
 		// Parse the Data
@@ -252,6 +274,8 @@ function main() {
 						return i * 10;
 					});
 
+				svg.selectAll(".barLabel" + index).remove();
+
 				svg.selectAll(".barLabel" + index)
 					.data(groups)
 					.enter()
@@ -303,6 +327,8 @@ function main() {
 	button1.addEventListener("click", handleClick);
 	button2.addEventListener("click", handleClick);
 	button3.addEventListener("click", handleClick);
+	button4.addEventListener("click", handleClick);
+	button5.addEventListener("click", handleClick);
 
 	//We trigger the event click for the first button to generate a chart when landing on the visualisation
 	button1.click();
