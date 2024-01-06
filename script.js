@@ -48,11 +48,11 @@ function main() {
 		.style("font-family", "Arial");
 
 	//We create the buttons to switch between data
-	const button1 = document.getElementById("ActivitePhysique");
-	const button2 = document.getElementById("ConsommationFruit");
-	const button3 = document.getElementById("ConsommationLegumes");
-	const button4 = document.getElementById("Age");
-	const button5 = document.getElementById("Activite");
+	const button1 = document.getElementById("activite_physique");
+	const button2 = document.getElementById("frequence_consommation_fruit");
+	const button3 = document.getElementById("frequence_consommation_legume");
+	const button4 = document.getElementById("activite");
+	const button5 = document.getElementById("age");
 
 	//Legend for the x axis
 	svg.append("text")
@@ -73,61 +73,34 @@ function main() {
 
 	//Event Handler
 	function handleClick(event) {
-		var path;
+		const path = [
+			`${dataPath}/group_${event.target.id}_femme.csv`,
+			`${dataPath}/group_${event.target.id}_homme.csv`,
+		];
+		console.log("path", path);
 		switch (event.target.id) {
-			case "ActivitePhysique":
-				path = [
-					`${dataPath}/group_activite_physique_femme.csv`,
-					`${dataPath}/group_activite_physique_homme.csv`,
-				];
+			case "activite_pyhsique":
 				ylabel.text(
 					"Distribution des personnes selon l'activité physique"
 				);
 				break;
-			case "ConsommationFruit":
-				path = [
-					`${dataPath}/group_frequence_consommation_fruit_femme.csv`,
-					`${dataPath}/group_frequence_consommation_fruit_homme.csv`,
-				];
+			case "consommation_fruit":
 				ylabel.text(
 					"Distribution des personnes selon la consommation des fruits "
 				);
 				break;
-			case "ConsommationLegumes":
-				path = [
-					`${dataPath}/group_frequence_consommation_legume_femme.csv`,
-					`${dataPath}/group_frequence_consommation_legume_homme.csv`,
-				];
+			case "consommation_legume":
 				ylabel.text(
 					"Distribution des personnes selon la consommation des legumes"
 				);
 				break;
-			case "Fumeur":
-				path = [
-					`${dataPath}/group_fumeur_femme.csv`,
-					`${dataPath}/group_fumeur_homme.csv`,
-				];
-				ylabel.text("Distribution des personnes selon fumeur ou pas");
-				break;
-			case "Activite":
-				path = [
-					`${dataPath}/group_activite_femme.csv`,
-					`${dataPath}/group_activite_homme.csv`,
-				];
+			case "activite":
 				ylabel.text("Distribution des personnes selon l'activite");
 				break;
-			case "Age":
-				path = [
-					`${dataPath}/group_age_femme.csv`,
-					`${dataPath}/group_age_homme.csv`,
-				];
+			case "age":
 				ylabel.text("Distribution des personnes selon l'activite");
 				break;
 			default:
-				path = [
-					`${dataPath}/group_activite_femme.csv`,
-					`${dataPath}/group_activite_homme.csv`,
-				];
 				ylabel.text("Distribution des personnes selon l'activite");
 				break;
 		}
@@ -138,7 +111,7 @@ function main() {
 				// List of subgroups = header of the csv files = soil condition here
 				const subgroups = data.columns.slice(1);
 				// List of groups = species here = value of the first column called group -> I show them on the X axis
-				const groups = data.map((d) => d.group);
+				const groups = data.map((d) => d[data.columns[0]]);
 
 				// Add X axis
 				const x = d3
@@ -156,23 +129,24 @@ function main() {
 
 				const findMaxValue = (array) => {
 					// Initialize max value with the smallest possible integer value
-					let maxValue = 10;
 					total = 0;
 					// Iterate through the array of objects
 					for (const obj of array) {
-						total = Math.max(
-							total,
-							Object.values(obj)
-								.slice(1)
-								.reduce(
-									(acc, current) => acc + parseInt(current),
-									0
-								)
-						);
+						total =
+							Math.max(
+								total,
+								Object.values(obj)
+									.slice(1)
+									.reduce(
+										(acc, current) =>
+											acc + parseInt(current),
+										0
+									)
+							) + 4;
 					}
 					return total;
 				};
-
+				console.log(data);
 				// Call the function with your array of objects
 				const max_count = findMaxValue(data);
 				const y = d3
