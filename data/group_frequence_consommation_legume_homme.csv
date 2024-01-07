@@ -1,4 +1,4 @@
-frequence_consommation_legume,HTA,asthme,aucune maladie,autres,diabete
-Fréquente,9,2,17,2,11
-occasionnellement,5,0,7,1,5
-rarement,0,0,0,0,0
+frequence_consommation_legume,Asthma,Diabetes,Hypertension,None,Others
+Frequently,2,11,9,17,2
+Occasionally,0,5,5,7,1
+Rarely,0,0,0,0,0

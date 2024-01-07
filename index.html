@@ -72,32 +72,38 @@
 			.variable:hover {
 				scale: 0.95;
 			}
+
+			.activeVariable {
+				background-color: #45b39b;
+				font-weight: 500;
+				scale: 0.94;
+			}
 		</style>
 	</head>
 
 	<body onload="main()">
-		<h1 style="text-align: center">Visualisation Maladies Chroniques</h1>
+		<h1 style="text-align: center">Visualization of Chronic Diseases</h1>
 		<div class="center">
 			<div id="container">
 				<button id="toggleButton" onclick="toggleButton()">
-					Toggle Color Blind
+					Color Blind Mode
 				</button>
 				<div id="my_buttons">
 					<button class="variable" id="activite_physique">
-						Activite Physique
-					</button>
-					<button class="variable" id="frequence_consommation_fruit">
-						Consommation de fruit
-					</button>
-					<button class="variable" id="frequence_consommation_legume">
-						Consommation de legumes
+						Physical Activity
 					</button>
 					<button class="variable" id="activite">
-						Activite Occupé
+						Professional Engagement
 					</button>
 					<button class="variable" id="age">Age</button>
+					<button class="variable" id="frequence_consommation_fruit">
+						Fruit Consumption
+					</button>
+					<button class="variable" id="frequence_consommation_legume">
+						Vegetable Consumption
+					</button>
 					<button class="variable" id="matiere_grasse">
-						Matiere grasse
+						Food Oil Selection
 					</button>
 				</div>
 				<div id="barchart-container">

@@ -1,4 +1,4 @@
-frequence_consommation_fruit,HTA,asthme,aucune maladie,autres,diabete
-Fréquente,3,1,10,0,9
-occasionnellement,10,1,13,1,5
-rarement,1,0,1,2,2
+frequence_consommation_fruit,Asthma,Diabetes,Hypertension,None,Others
+Frequently,1,9,3,10,0
+Occasionally,1,5,10,13,1
+Rarely,0,2,1,1,2

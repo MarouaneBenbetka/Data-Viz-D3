@@ -1,5 +1,5 @@
-matiere_grasse,HTA,asthme,aucune maladie,autres,diabete
-Beurre,3,0,1,0,2
-Huile végétale,9,4,10,2,15
+matiere_grasse,Asthma,Diabetes,Hypertension,None,Others
+Beurre,0,2,3,1,0
+Huile végétale,4,15,9,10,2
 Zit ziton,0,0,0,0,0
-autre,0,0,0,0,1
+autre,0,1,0,0,0

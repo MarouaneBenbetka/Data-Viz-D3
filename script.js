@@ -1,16 +1,16 @@
 const dataPath = "./data";
-
-const colorsNormal = ["#FF5733", "#66CCCC", "#99CC99", "#9966CC", "#FF9933"];
-
+const maladies = "Asthma,Diabetes,Hypertension,None,Others".split(",");
+const colorsNormal = ["#66CCCC", "#FF9933", "#FF5733", "#99CC99", "#9966CC"];
 const colorsBlindPeople = [
-	"#6A8A82",
 	"#4A90E2",
+	"#FF8C00",
+	"#6A8A82",
 	"#CCCCCC",
 	"#FFD700",
-	"#FF8C00",
 ];
 
 function main() {
+	const sexe = ["homme", "femme"];
 	let colorBlind = false;
 	const margin = { top: 10, right: 250, bottom: 50, left: 50 },
 		width = 1000 - margin.left - margin.right,
@@ -37,7 +37,7 @@ function main() {
 		.select("#mysvg")
 		.append("rect")
 		.attr("id", "myrec")
-		.attr("width", "225")
+		.attr("width", "100")
 		.attr("height", "15")
 		.attr("fill", "white")
 		.attr("stroke", "black")
@@ -46,6 +46,7 @@ function main() {
 		.attr("pointer-events", "none")
 		.attr("rx", 5)
 		.attr("ry", 5);
+
 	const tooltip = d3
 		.select("#mysvg")
 		.attr("id", "mytool")
@@ -69,11 +70,13 @@ function main() {
 	const colorToggleButton = document.getElementById("toggleButton");
 
 	//Legend for the x axis
-	svg.append("text")
-		.attr("x", width)
-		.attr("y", height + 12)
+	const xLabel = svg
+		.append("text")
+		.attr("x", width - 40)
+		.attr("y", height + 20)
 		.attr("fill", "black")
 		.style("font-size", "12px")
+		.style("font-weight", "600")
 		.text("Age")
 		.style("font-family", "sans-serif");
 	//Legend for the y axis
@@ -82,16 +85,30 @@ function main() {
 		.attr("x", 10)
 		.attr("y", 5)
 		.attr("fill", "black")
+		.style("font-weight", "600")
 		.style("font-size", "12px")
 		.style("font-family", "sans-serif");
 
 	//Event Handler
 	function handleClick(event) {
+		// Remove the class from all buttons
+		const clickedButton = event.target;
+		var allButtons = document.querySelectorAll("button");
+		allButtons.forEach(function (button) {
+			if (button !== clickedButton) {
+				button.classList.remove("activeVariable");
+			}
+		});
+
+		// add active class for the clicked button
+		event.target.classList.add("activeVariable");
+
 		const path = [
 			`${dataPath}/group_${event.target.id}_femme.csv`,
 			`${dataPath}/group_${event.target.id}_homme.csv`,
 		];
 		console.log(event.target.id);
+		xLabel.text(event.target.textContent);
 		switch (event.target.id) {
 			case "activite_physique":
 				ylabel.text(
@@ -195,7 +212,7 @@ function main() {
 					.data(stackedData)
 					.join("g")
 					.attr("fill", (d) => color(d.key))
-					.attr("class", (d) => "myRect " + d.key)
+					.attr("class", (d) => `myRect ${d.key} ${sexe[index]}`)
 					.selectAll("rect")
 					.data((d) => d)
 					.join("rect")
@@ -219,24 +236,19 @@ function main() {
 						// Reduce opacity of all rect to 0.2
 						d3.selectAll(".myRect").style("opacity", 0.2);
 						// Highlight all rects of this subgroup with opacity 1. It is possible to select them since they have a specific class = their name.
-						d3.selectAll(`[class*="${subGroupName}"]`).style(
-							"opacity",
-							1
-						);
+						d3.selectAll(`.${subGroupName}.homme`)
+							.style("opacity", 1)
+							.attr("fill", "#6FA8DC");
+						d3.selectAll(`.${subGroupName}.femme`)
+							.style("opacity", 1)
+							.attr("fill", "#d5a6bd");
 
 						const subgroupValue = d.data[subGroupName];
 						const sexe = index == 0 ? "homme" : "femme";
 						rec.attr("opacity", 0.8);
 						tooltip
 							.attr("opacity", 1)
-							.text(
-								subGroupName +
-									"(" +
-									sexe +
-									")" +
-									" : " +
-									subgroupValue
-							);
+							.text(`${subGroupName} : ${subgroupValue}`);
 					})
 					.on("mousemove", function (event, d) {
 						mouseX = event.x - svgRect.left;
@@ -247,7 +259,22 @@ function main() {
 					.on("mouseleave", function (event, d) {
 						// When user do not hover anymore
 						// Back to normal opacity: 1
+						const colorsPallete = colorBlind
+							? colorsBlindPeople
+							: colorsNormal;
+
 						d3.selectAll(".myRect").style("opacity", 1);
+						const subGroupName = d3
+							.select(this.parentNode)
+							.datum().key;
+						d3.selectAll(`.${subGroupName}`)
+							.style("opacity", 1)
+							.attr(
+								"fill",
+								colorsPallete[maladies.indexOf(subGroupName)]
+							);
+
+						console.log(subGroupName);
 						//we hide the tooltip
 						rec.attr("opacity", 0);
 						tooltip.attr("opacity", 0);

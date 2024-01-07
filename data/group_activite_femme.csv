@@ -1,5 +1,5 @@
-activite,HTA,asthme,aucune maladie,autres,diabete
-Employé(e) dans le privé,1,0,0,1,0
-Employé(e) de l’Etat,1,0,3,1,4
-chomeur(se),0,0,1,0,3
-étudiant,10,4,7,0,11
+activite,Asthma,Diabetes,Hypertension,None,Others
+Employé(e) dans le privé,0,0,1,0,1
+Employé(e) de l’Etat,0,4,1,3,1
+chomeur(se),0,3,0,1,0
+étudiant,4,11,10,7,0
