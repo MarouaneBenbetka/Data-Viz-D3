@@ -35,10 +35,20 @@ const radarChartAxisData = {
 	},
 };
 
+const healthConditions = {
+	asthma: "Chronic respiratory condition characterized by inflammation of the airways, leading to recurrent episodes of breathlessness, wheezing, and coughing.",
+	diabetes:
+		"Metabolic disorder resulting in elevated blood sugar levels, either due to insufficient insulin production (Type 1) or ineffective use of insulin by the body (Type 2).",
+	hypertension:
+		"Commonly known as high blood pressure, it occurs when the force of blood against the artery walls is consistently too high, potentially leading to serious health problems.",
+	none: "Indicates the absence of any specified medical conditions or diseases.",
+	others: "Refers to a category encompassing various health conditions not explicitly listed, requiring further specification for a detailed description.",
+};
+
 function main() {
 	const sexe = ["homme", "femme"];
 	const margin = { top: 10, right: 250, bottom: 50, left: 50 },
-		width = 1000 - margin.left - margin.right,
+		width = 850 - margin.left - margin.right,
 		height = 450 - margin.top - margin.bottom;
 
 	// append the svg object to the body of the page
@@ -267,6 +277,15 @@ function main() {
 						if (maladieSelectedIndex != hoveredMaladieIndex) {
 							maladieSelectedIndex = hoveredMaladieIndex;
 							mainRadarChart(hoveredMaladieIndex);
+
+							// this is part is for chaning the description of the maladie
+							document.getElementById(
+								"maladie-title"
+							).textContent = subGroupName;
+							document.getElementById(
+								"maladie-description"
+							).textContent =
+								healthConditions[subGroupName.toLowerCase()];
 						}
 						rec.attr("opacity", 0.8);
 						tooltip
@@ -571,7 +590,7 @@ const mainRadarChart = (data_index) => {
 
 	var margin = { top: 35, right: 100, bottom: 100, left: 100 },
 		width =
-			Math.min(420, window.innerWidth - 10) - margin.left - margin.right,
+			Math.min(380, window.innerWidth - 10) - margin.left - margin.right,
 		height = Math.min(
 			width,
 			window.innerHeight - margin.top - margin.bottom - 20
