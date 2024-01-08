@@ -1,0 +1,42 @@
+[
+	{
+		"maladie_chronique_famille": "Asthma",
+		"age": 0.748792270531401,
+		"frequence_consommation_fruit": 0.7585301837270342,
+		"frequence_consommation_legume": 0.8712121212121212,
+		"activite_physique": 0.48571428571428577,
+		"temps_position_assise": 0.9927272727272728
+	},
+	{
+		"maladie_chronique_famille": "Diabetes",
+		"age": 0.8992094861660078,
+		"frequence_consommation_fruit": 1.0,
+		"frequence_consommation_legume": 0.9024064171122994,
+		"activite_physique": 1.0,
+		"temps_position_assise": 1.0
+	},
+	{
+		"maladie_chronique_famille": "Hypertension",
+		"age": 0.8472686733556298,
+		"frequence_consommation_fruit": 0.8134463961235614,
+		"frequence_consommation_legume": 0.9090909090909091,
+		"activite_physique": 0.5230769230769231,
+		"temps_position_assise": 0.5987878787878788
+	},
+	{
+		"maladie_chronique_famille": "None",
+		"age": 0.9906832298136645,
+		"frequence_consommation_fruit": 0.9714285714285714,
+		"frequence_consommation_legume": 0.9350649350649349,
+		"activite_physique": 0.7910204081632654,
+		"temps_position_assise": 0.8925090909090909
+	},
+	{
+		"maladie_chronique_famille": "Others",
+		"age": 1.0,
+		"frequence_consommation_fruit": 0.6960629921259842,
+		"frequence_consommation_legume": 1.0,
+		"activite_physique": 0.9714285714285715,
+		"temps_position_assise": 0.52
+	}
+]

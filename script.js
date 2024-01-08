@@ -9,12 +9,37 @@ const colorsBlindPeople = [
 	"#FFD700",
 ];
 
+let colorBlind = false;
+let maladieSelectedIndex = 0;
+
+const radarChartAxisData = {
+	Age: {
+		max: 27.5,
+		label: "years",
+	},
+	"Fruit Consumption": {
+		max: 3.5,
+		label: "times per week",
+	},
+	"Vegetable Consumption": {
+		max: 4,
+		label: "times per week",
+	},
+	"Physical Activity": {
+		max: 2,
+		label: "times per week",
+	},
+	"Sitting Time": {
+		max: 10.5,
+		label: "hours per day",
+	},
+};
+
 function main() {
 	const sexe = ["homme", "femme"];
-	let colorBlind = false;
 	const margin = { top: 10, right: 250, bottom: 50, left: 50 },
 		width = 1000 - margin.left - margin.right,
-		height = 550 - margin.top - margin.bottom;
+		height = 450 - margin.top - margin.bottom;
 
 	// append the svg object to the body of the page
 	const svg = d3
@@ -40,7 +65,6 @@ function main() {
 		.attr("width", "100")
 		.attr("height", "15")
 		.attr("fill", "white")
-		.attr("stroke", "black")
 		.attr("stroke-width", "1px")
 		.attr("opacity", 0)
 		.attr("pointer-events", "none")
@@ -74,7 +98,6 @@ function main() {
 		.append("text")
 		.attr("x", width - 40)
 		.attr("y", height + 20)
-		.attr("fill", "black")
 		.style("font-size", "12px")
 		.style("font-weight", "600")
 		.text("Age")
@@ -84,7 +107,6 @@ function main() {
 		.append("text")
 		.attr("x", 10)
 		.attr("y", 5)
-		.attr("fill", "black")
 		.style("font-weight", "600")
 		.style("font-size", "12px")
 		.style("font-family", "sans-serif");
@@ -92,6 +114,7 @@ function main() {
 	//Event Handler
 	function handleClick(event) {
 		// Remove the class from all buttons
+		event.preventDefault();
 		const clickedButton = event.target;
 		var allButtons = document.querySelectorAll("button");
 		allButtons.forEach(function (button) {
@@ -157,11 +180,6 @@ function main() {
 					.domain(groups)
 					.range([0, width])
 					.padding([0.4]);
-				d3.select("#myxscale").remove();
-				svg.append("g")
-					.attr("id", "myxscale")
-					.attr("transform", `translate(0, ${height})`)
-					.call(d3.axisBottom(x).tickSizeOuter(0));
 
 				// Add Y axis
 
@@ -191,8 +209,6 @@ function main() {
 					.scaleLinear()
 					.domain([0, max_count + 4])
 					.range([height, 0]);
-				d3.select("#myyscale").remove();
-				svg.append("g").attr("id", "myyscale").call(d3.axisLeft(y));
 
 				// color palette = one color per subgroup
 				const color = d3
@@ -205,6 +221,7 @@ function main() {
 
 				colors_list = [];
 				// Show the bars
+
 				d3.select("#mybars" + index).remove();
 				svg.append("g")
 					.attr("id", "mybars" + index)
@@ -245,8 +262,15 @@ function main() {
 
 						const subgroupValue = d.data[subGroupName];
 						const sexe = index == 0 ? "homme" : "femme";
+						const hoveredMaladieIndex =
+							maladies.indexOf(subGroupName);
+						if (maladieSelectedIndex != hoveredMaladieIndex) {
+							maladieSelectedIndex = hoveredMaladieIndex;
+							mainRadarChart(hoveredMaladieIndex);
+						}
 						rec.attr("opacity", 0.8);
 						tooltip
+							.style("fill", "black")
 							.attr("opacity", 1)
 							.text(`${subGroupName} : ${subgroupValue}`);
 					})
@@ -327,18 +351,27 @@ function main() {
 						.text(subgroups[i]);
 				}
 
+				d3.select("#myyscale").remove();
+				svg.append("g").attr("id", "myyscale").call(d3.axisLeft(y));
+
+				d3.select("#myxscale").remove();
+				svg.append("g")
+					.attr("id", "myxscale")
+					.attr("transform", `translate(0, ${height})`)
+					.call(d3.axisBottom(x).tickSizeOuter(0));
+
 				for (let i = 0; i < data.length; i++) {
 					temp = data[i];
 					groupname = temp.group;
 
 					delete temp.group;
-					piecreator(groupname, temp, i);
 				}
 			});
 		});
 	}
 
-	function toggleButton() {
+	function toggleButton(e) {
+		e.preventDefault();
 		// Toggle the "active" class on button click
 		colorToggleButton.classList.toggle("active");
 
@@ -349,6 +382,7 @@ function main() {
 			colorBlind = false;
 		}
 
+		mainRadarChart(maladieSelectedIndex);
 		button1.click();
 	}
 
@@ -364,100 +398,583 @@ function main() {
 	button1.click();
 }
 
-//=============================================
-// the PIE CHART
-//=============================================
+const toggleDarkMode = (e) => {
+	e.preventDefault();
 
-function piecreator(groupname, data, i) {
-	const width = 300,
-		height = 300,
-		margin = 40;
+	const body = document.getElementById("body");
+	body.classList.toggle("dark");
 
-	// The radius of the pie plot is half the width or half the height (smallest one). I subtract a bit of margin.
-	const radius = Math.min(width, height) / 2 - margin;
+	document.getElementById("toggleDarkMode").classList.toggle("active");
+};
 
-	// Append the svg object to the div called 'my_dataviz'
-	d3.select("#piesvg" + i).remove();
-	const svg = d3
-		.select("#piediv")
-		.append("svg")
-		.attr("width", width)
-		.attr("height", height)
-		.attr("id", "piesvg" + i)
-		.append("g")
-		.attr("transform", `translate(${width / 2}, ${height / 2})`);
+/////////////////////////////////////////////////////////
+/////////////// The Radar Chart Function ////////////////
+/////////////// Written by Nadieh Bremer ////////////////
+////////////////// VisualCinnamon.com ///////////////////
+/////////// Inspired by the code of alangrafu ///////////
+/////////////////////////////////////////////////////////
 
-	// Add a border to the pie chart
-	svg.append("circle")
-		.attr("r", radius + 5)
-		.style("stroke", "black")
-		.style("fill", "none");
+const all_data = [
+	[
+		{ maladie: "Asthma", axis: "Age", value: 0.748792270531401, max: 28 },
+		{
+			maladie: "Asthma",
+			axis: "Fruit Consumption",
+			value: 0.7585301837270342,
+			max: 4,
+		},
+		{
+			maladie: "Asthma",
+			axis: "Vegetable Consumption",
+			value: 0.8712121212121212,
+			max: "4-5 times per week",
+		},
+		{
+			maladie: "Asthma",
+			axis: "Physical Activity",
+			value: 0.48571428571428577,
+			max: "2 times per week",
+		},
+		{
+			maladie: "Asthma",
+			axis: "Sitting Time",
+			value: 0.9927272727272728,
+			max: "11 hours",
+		},
+	],
+	[
+		{
+			maladie: "Diabetes",
+			axis: "Age",
+			value: 0.8992094861660078,
+			max: 28,
+		},
+		{
+			maladie: "Diabetes",
+			axis: "Fruit Consumption",
+			value: 1.0,
+			max: 4,
+		},
+		{
+			maladie: "Diabetes",
+			axis: "Vegetable Consumption",
+			value: 0.9024064171122994,
+			max: "4-5 times per week",
+		},
+		{
+			maladie: "Diabetes",
+			axis: "Physical Activity",
+			value: 1.0,
+			max: "2 times per week",
+		},
+		{
+			maladie: "Diabetes",
+			axis: "Sitting Time",
+			value: 1.0,
+			max: "11 hours",
+		},
+	],
+	[
+		{
+			maladie: "Hypertension",
+			axis: "Age",
+			value: 0.8472686733556298,
+			max: 28,
+		},
+		{
+			maladie: "Hypertension",
+			axis: "Fruit Consumption",
+			value: 0.8134463961235614,
+			max: 4,
+		},
+		{
+			maladie: "Hypertension",
+			axis: "Vegetable Consumption",
+			value: 0.9090909090909091,
+			max: "4-5 times per week",
+		},
+		{
+			maladie: "Hypertension",
+			axis: "Physical Activity",
+			value: 0.5230769230769231,
+			max: "2 times per week",
+		},
+		{
+			maladie: "Hypertension",
+			axis: "Sitting Time",
+			value: 0.5987878787878788,
+			max: "11 hours",
+		},
+	],
+	[
+		{ maladie: "None", axis: "Age", value: 0.9906832298136645, max: 28 },
+		{
+			maladie: "None",
+			axis: "Fruit Consumption",
+			value: 0.9714285714285714,
+			max: 4,
+		},
+		{
+			maladie: "None",
+			axis: "Vegetable Consumption",
+			value: 0.9350649350649349,
+			max: "4-5 times per week",
+		},
+		{
+			maladie: "None",
+			axis: "Physical Activity",
+			value: 0.7910204081632654,
+			max: "2 times per week",
+		},
+		{
+			maladie: "None",
+			axis: "Sitting Time",
+			value: 0.8925090909090909,
+			max: "11 hours",
+		},
+	],
+	[
+		{ maladie: "Others", axis: "Age", value: 1.0, max: 28 },
+		{
+			maladie: "Others",
+			axis: "Fruit Consumption",
+			value: 0.6960629921259842,
+			max: 4,
+		},
+		{
+			maladie: "Others",
+			axis: "Vegetable Consumption",
+			value: 1.0,
+			max: "4-5 times per week",
+		},
+		{
+			maladie: "Others",
+			axis: "Physical Activity",
+			value: 0.9714285714285715,
+			max: "2 times per week",
+		},
+		{
+			maladie: "Others",
+			axis: "Sitting Time",
+			value: 0.52,
+			max: "11 hours",
+		},
+	],
+];
 
-	// We add the group names
-	d3.select("#groupname" + i).remove();
-	svg.append("text")
-		.attr("id", "groupname" + i)
-		.attr("x", 0)
-		.attr("y", height / 2)
-		.style("font-size", "14px")
-		.style("font-weight", "bold") // Make the group name bold
-		.attr("alignment-baseline", "middle")
-		.attr("font-family", "sans-serif")
-		.text(groupname);
+const mainRadarChart = (data_index) => {
+	/* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
 
-	// Set the color scale
-	const color = d3
-		.scaleOrdinal()
-		.range([
-			"#0A2DC7",
-			"#3979AA",
-			"#009DFF",
-			"#8CD8F3",
-			"#71062D",
-			"#D2002D",
-			"#B83CDB",
-			"#FA86F2",
-		]);
+	//////////////////////////////////////////////////////////////
+	//////////////////////// Set-Up //////////////////////////////
+	//////////////////////////////////////////////////////////////
 
-	// List of all categories with non-zero values
-	const categories = Object.keys(data).filter(
-		(key) => key !== "group" && +data[key] !== 0
+	var margin = { top: 35, right: 100, bottom: 100, left: 100 },
+		width =
+			Math.min(420, window.innerWidth - 10) - margin.left - margin.right,
+		height = Math.min(
+			width,
+			window.innerHeight - margin.top - margin.bottom - 20
+		);
+
+	//////////////////////////////////////////////////////////////
+	////////////////////////// Data //////////////////////////////
+	//////////////////////////////////////////////////////////////
+
+	var data = [all_data[data_index]];
+	console.log(data_index);
+	//////////////////////////////////////////////////////////////
+	//////////////////// Draw the Chart //////////////////////////
+	//////////////////////////////////////////////////////////////
+	const maladieColor = colorBlind
+		? colorsBlindPeople[data_index]
+		: colorsNormal[data_index];
+	var color = d3_old.scale.ordinal().range([maladieColor]);
+
+	var radarChartOptions = {
+		w: width,
+		h: height,
+		margin: margin,
+		maxValue: 0.5,
+		levels: 5,
+		roundStrokes: true,
+		color: color,
+	};
+	//Call function to draw the Radar chart
+	RadarChart(".radarChart", data, radarChartOptions);
+};
+
+function RadarChart(id, data, options) {
+	var cfg = {
+		w: 600, //Width of the circle
+		h: 600, //Height of the circle
+		margin: { top: 20, right: 20, bottom: 20, left: 20 }, //The margins of the SVG
+		levels: 3, //How many levels or inner circles should there be drawn
+		maxValue: 0, //What is the value that the biggest circle will represent
+		labelFactor: 1.25, //How much farther than the radius of the outer circle should the labels be placed
+		wrapWidth: 60, //The number of pixels after which a label needs to be given a new line
+		opacityArea: 0.35, //The opacity of the area of the blob
+		dotRadius: 4, //The size of the colored circles of each blog
+		opacityCircles: 0.1, //The opacity of the circles of each blob
+		strokeWidth: 2, //The width of the stroke around each blob
+		roundStrokes: false, //If true the area and stroke will follow a round path (cardinal-closed)
+		color: d3_old.scale.category10(), //Color function
+	};
+
+	//Put all of the options into a variable called cfg
+	if ("undefined" !== typeof options) {
+		for (var i in options) {
+			if ("undefined" !== typeof options[i]) {
+				cfg[i] = options[i];
+			}
+		} //for i
+	} //if
+
+	//If the supplied maxValue is smaller than the actual one, replace by the max in the data
+	var maxValue = Math.max(
+		cfg.maxValue,
+		d3_old.max(data, function (i) {
+			return d3_old.max(
+				i.map(function (o) {
+					return o.value;
+				})
+			);
+		})
 	);
 
-	// Create an array with values for each non-zero category
-	const pieData = categories.map((category) => [category, +data[category]]);
+	var allAxis = data[0].map(function (i, j) {
+			return i.axis;
+		}), //Names of each axis
+		total = allAxis.length, //The number of different axes
+		radius = Math.min(cfg.w / 2, cfg.h / 2), //Radius of the outermost circle
+		Format = d3_old.format("%"), //Percentage formatting
+		angleSlice = (Math.PI * 2) / total; //The width in radians of each "slice"
 
-	// Compute the position of each group on the pie
-	const pie = d3.pie().value(function (d) {
-		return d[1];
-	});
-	const data_ready = pie(pieData);
+	//Scale for the radius
+	var rScale = d3_old.scale.linear().range([0, radius]).domain([0, maxValue]);
 
-	// Shape helper to build arcs
-	const arcGenerator = d3.arc().innerRadius(0).outerRadius(radius);
+	/////////////////////////////////////////////////////////
+	//////////// Create the container SVG and g /////////////
+	/////////////////////////////////////////////////////////
 
-	// Build the pie chart
-	svg.selectAll("mySlices")
-		.data(data_ready)
-		.join("path")
-		.attr("d", arcGenerator)
-		.attr("fill", function (d) {
-			return color(d.data[0]);
+	//Remove whatever chart with the same id/class was present before
+	d3_old.select(id).select("svg").remove();
+
+	//Initiate the radar chart SVG
+	var svg = d3_old
+		.select(id)
+		.append("svg")
+		.attr("width", cfg.w + cfg.margin.left + cfg.margin.right)
+		.attr("height", cfg.h + cfg.margin.top + cfg.margin.bottom)
+		.attr("class", "radar" + id);
+	//Append a g element
+	var g = svg
+		.append("g")
+		.attr(
+			"transform",
+			"translate(" +
+				(cfg.w / 2 + cfg.margin.left) +
+				"," +
+				(cfg.h / 2 + cfg.margin.top) +
+				")"
+		);
+
+	/////////////////////////////////////////////////////////
+	////////// Glow filter for some extra pizzazz ///////////
+	/////////////////////////////////////////////////////////
+
+	//Filter for the outside glow
+	var filter = g.append("defs").append("filter").attr("id", "glow"),
+		feGaussianBlur = filter
+			.append("feGaussianBlur")
+			.attr("stdDeviation", "2.5")
+			.attr("result", "coloredBlur"),
+		feMerge = filter.append("feMerge"),
+		feMergeNode_1 = feMerge.append("feMergeNode").attr("in", "coloredBlur"),
+		feMergeNode_2 = feMerge
+			.append("feMergeNode")
+			.attr("in", "SourceGraphic");
+
+	/////////////////////////////////////////////////////////
+	/////////////// Draw the Circular grid //////////////////
+	/////////////////////////////////////////////////////////
+
+	//Wrapper for the grid & axes
+	var axisGrid = g.append("g").attr("class", "axisWrapper");
+
+	//Draw the background circles
+	axisGrid
+		.selectAll(".levels")
+		.data(d3_old.range(1, cfg.levels + 1).reverse())
+		.enter()
+		.append("circle")
+		.attr("class", "gridCircle")
+		.attr("r", function (d, i) {
+			return (radius / cfg.levels) * d;
 		})
-		.attr("stroke", "black")
-		.style("stroke-width", "2px")
-		.style("opacity", 0.7);
+		.style("fill", "#CDCDCD")
+		.style("stroke", "#CDCDCD")
+		.style("fill-opacity", cfg.opacityCircles)
+		.style("filter", "url(#glow)");
 
-	// Add the category names as labels
-	svg.selectAll("mySlices")
-		.data(data_ready)
-		.join("text")
+	//Text indicating at what % each level is
+	// axisGrid
+	// 	.selectAll(".axisLabel")
+	// 	.data(d3_old.range(1, cfg.levels + 1).reverse())
+	// 	.enter()
+	// 	.append("text")
+	// 	.attr("class", "axisLabel")
+	// 	.attr("x", 4)
+	// 	.attr("y", function (d) {
+	// 		return (-d * radius) / cfg.levels;
+	// 	})
+	// 	.attr("dy", "0.4em")
+	// 	.style("font-size", "10px")
+	// 	.attr("fill", "#737373")
+	// 	.text(function (d, i) {
+	// 		return Format((maxValue * d) / cfg.levels);
+	// 	});
+
+	/////////////////////////////////////////////////////////
+	//////////////////// Draw the axes //////////////////////
+	/////////////////////////////////////////////////////////
+
+	//Create the straight lines radiating outward from the center
+	var axis = axisGrid
+		.selectAll(".axis")
+		.data(allAxis)
+		.enter()
+		.append("g")
+		.attr("class", "axis");
+	//Append the lines
+	axis.append("line")
+		.attr("x1", 0)
+		.attr("y1", 0)
+		.attr("x2", function (d, i) {
+			return (
+				rScale(maxValue * 1.1) * Math.cos(angleSlice * i - Math.PI / 2)
+			);
+		})
+		.attr("y2", function (d, i) {
+			return (
+				rScale(maxValue * 1.1) * Math.sin(angleSlice * i - Math.PI / 2)
+			);
+		})
+		.attr("class", "line")
+		.style("stroke", "white")
+		.style("stroke-width", "2px");
+
+	//Append the labels at each axis
+	axis.append("text")
+		.attr("class", "legend")
+		.style("font-size", "11px")
+		.attr("text-anchor", "middle")
+		.attr("dy", "0.35em")
+		.attr("x", function (d, i) {
+			return (
+				rScale(maxValue * cfg.labelFactor) *
+				Math.cos(angleSlice * i - Math.PI / 2)
+			);
+		})
+		.attr("y", function (d, i) {
+			return (
+				rScale(maxValue * cfg.labelFactor) *
+				Math.sin(angleSlice * i - Math.PI / 2)
+			);
+		})
 		.text(function (d) {
-			return d.data[0];
+			return d;
 		})
-		.attr("transform", function (d) {
-			return `translate(${arcGenerator.centroid(d)})`;
+		.call(wrap, cfg.wrapWidth);
+
+	/////////////////////////////////////////////////////////
+	///////////// Draw the radar chart blobs ////////////////
+	/////////////////////////////////////////////////////////
+
+	//The radial line function
+	var radarLine = d3_old.svg.line
+		.radial()
+		.interpolate("linear-closed")
+		.radius(function (d) {
+			return rScale(d.value);
 		})
-		.style("text-anchor", "middle")
-		.style("font-size", 12);
-}
+		.angle(function (d, i) {
+			return i * angleSlice;
+		});
+
+	if (cfg.roundStrokes) {
+		radarLine.interpolate("cardinal-closed");
+	}
+
+	//Create a wrapper for the blobs
+	var blobWrapper = g
+		.selectAll(".radarWrapper")
+		.data(data)
+		.enter()
+		.append("g")
+		.attr("class", "radarWrapper");
+
+	//Append the backgrounds
+	blobWrapper
+		.append("path")
+		.attr("class", "radarArea")
+		.attr("d", function (d, i) {
+			return radarLine(d);
+		})
+		.style("fill", function (d, i) {
+			return cfg.color(i);
+		})
+		.style("fill-opacity", cfg.opacityArea)
+		.on("mouseover", function (d, i) {
+			//Dim all blobs
+			d3_old
+				.selectAll(".radarArea")
+				.transition()
+				.duration(200)
+				.style("fill-opacity", 0.08);
+			//Bring back the hovered over blob
+			d3_old
+				.select(this)
+				.transition()
+				.duration(200)
+				.style("fill-opacity", 0.7);
+		})
+		.on("mouseout", function () {
+			//Bring back all blobs
+			d3_old
+				.selectAll(".radarArea")
+				.transition()
+				.duration(200)
+				.style("fill-opacity", cfg.opacityArea);
+		});
+
+	//Create the outlines
+	blobWrapper
+		.append("path")
+		.attr("class", "radarStroke")
+		.attr("d", function (d, i) {
+			return radarLine(d);
+		})
+		.style("stroke-width", cfg.strokeWidth + "px")
+		.style("stroke", function (d, i) {
+			return cfg.color(i);
+		})
+		.style("fill", "none")
+		.style("filter", "url(#glow)");
+
+	//Append the circles
+	blobWrapper
+		.selectAll(".radarCircle")
+		.data(function (d, i) {
+			return d;
+		})
+		.enter()
+		.append("circle")
+		.attr("class", "radarCircle")
+		.attr("r", cfg.dotRadius)
+		.attr("cx", function (d, i) {
+			return rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2);
+		})
+		.attr("cy", function (d, i) {
+			return rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2);
+		})
+		.style("fill", function (d, i, j) {
+			return cfg.color(j);
+		})
+		.style("fill-opacity", 0.8);
+
+	/////////////////////////////////////////////////////////
+	//////// Append invisible circles for tooltip ///////////
+	/////////////////////////////////////////////////////////
+
+	//Wrapper for the invisible circles on top
+	var blobCircleWrapper = g
+		.selectAll(".radarCircleWrapper")
+		.data(data)
+		.enter()
+		.append("g")
+		.attr("class", "radarCircleWrapper");
+
+	//Append a set of invisible circles on top for the mouseover pop-up
+	blobCircleWrapper
+		.selectAll(".radarInvisibleCircle")
+		.data(function (d, i) {
+			return d;
+		})
+		.enter()
+		.append("circle")
+		.attr("class", "radarInvisibleCircle")
+		.attr("r", cfg.dotRadius * 1.5)
+		.attr("cx", function (d, i) {
+			return rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2);
+		})
+		.attr("cy", function (d, i) {
+			return rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2);
+		})
+		.style("fill", "none")
+		.style("pointer-events", "all")
+		.on("mouseover", function (d, i) {
+			newX = parseFloat(d3_old.select(this).attr("cx")) - 10;
+			newY = parseFloat(d3_old.select(this).attr("cy")) - 20;
+
+			tooltip
+				.attr("x", newX)
+				.attr("y", newY)
+				.text(
+					`${Math.round(d.value * radarChartAxisData[d.axis].max)} ${
+						radarChartAxisData[d.axis].label
+					}`
+				)
+				.transition()
+				.duration(200)
+				.style("opacity", 1);
+		})
+		.on("mouseout", function () {
+			tooltip.transition().duration(200).style("opacity", 0);
+		});
+
+	//Set up the small tooltip for when you hover over a circle
+	var tooltip = g.append("text").attr("class", "tooltip").style("opacity", 0);
+
+	/////////////////////////////////////////////////////////
+	/////////////////// Helper Function /////////////////////
+	/////////////////////////////////////////////////////////
+
+	//Taken from http://bl.ocks.org/mbostock/7555321
+	//Wraps SVG text
+	function wrap(text, width) {
+		text.each(function () {
+			var text = d3_old.select(this),
+				words = text.text().split(/\s+/).reverse(),
+				word,
+				line = [],
+				lineNumber = 0,
+				lineHeight = 1.4, // ems
+				y = text.attr("y"),
+				x = text.attr("x"),
+				dy = parseFloat(text.attr("dy")),
+				tspan = text
+					.text(null)
+					.append("tspan")
+					.attr("x", x)
+					.attr("y", y)
+					.attr("dy", dy + "em");
+
+			while ((word = words.pop())) {
+				line.push(word);
+				tspan.text(line.join(" "));
+				if (tspan.node().getComputedTextLength() > width) {
+					line.pop();
+					tspan.text(line.join(" "));
+					line = [word];
+					tspan = text
+						.append("tspan")
+						.attr("x", x)
+						.attr("y", y)
+						.attr("dy", ++lineNumber * lineHeight + dy + "em")
+						.text(word);
+				}
+			}
+		});
+	} //wrap
+} //RadarChart
