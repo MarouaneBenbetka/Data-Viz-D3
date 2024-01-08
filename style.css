@@ -1,5 +1,8 @@
+body {
+	font-family: "Montserrat", sans-serif;
+}
 body.dark {
-	background-color: black;
+	background-color: #343338;
 }
 body.dark h1 {
 	color: white;
@@ -14,6 +17,10 @@ text {
 }
 .dark text {
 	fill: white;
+}
+
+p {
+	font-family: "Lato", sans-serif;
 }
 
 #myxscale,
