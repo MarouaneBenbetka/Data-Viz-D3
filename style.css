@@ -275,3 +275,7 @@ h2 {
 	display: inline-block;
 	vertical-align: middle;
 }
+
+.description-maladie {
+	margin: auto 30px;
+}
