@@ -45,13 +45,18 @@ const healthConditions = {
 	others: "Refers to a category encompassing various health conditions not explicitly listed, requiring further specification for a detailed description.",
 };
 
+// The main function that sets up the visualization
 function main() {
+	// Array to store gender labels
 	const sexe = ["homme", "femme"];
+
+	// Margin and size settings for the SVG container
+
 	const margin = { top: 10, right: 250, bottom: 50, left: 50 },
 		width = 850 - margin.left - margin.right,
 		height = 450 - margin.top - margin.bottom;
 
-	// append the svg object to the body of the page
+	// Append an SVG container to the specified element
 	const svg = d3
 		.select("#my_dataviz")
 		.append("svg")
@@ -61,13 +66,11 @@ function main() {
 		.append("g")
 		.attr("transform", `translate(${margin.left},${margin.top})`);
 
-	// We use these to get the relative coordinates of mouse events to the svg
+	// Get the relative coordinates of mouse events to the SVG
 	const svg_el = document.getElementById("mysvg");
 	const svgRect = svg_el.getBoundingClientRect();
 
-	// ----------------
-	// We create a tooltip
-	// ----------------
+	// Create a tooltip rectangle
 	const rec = d3
 		.select("#mysvg")
 		.append("rect")
@@ -81,6 +84,7 @@ function main() {
 		.attr("rx", 5)
 		.attr("ry", 5);
 
+	// Create a tooltip text element
 	const tooltip = d3
 		.select("#mysvg")
 		.attr("id", "mytool")
@@ -93,7 +97,7 @@ function main() {
 		.style("font-size", "12px")
 		.style("font-family", "Arial");
 
-	//We create the buttons to switch between data
+	// Buttons to switch between data categories
 	const button1 = document.getElementById("activite_physique");
 	const button2 = document.getElementById("frequence_consommation_fruit");
 	const button3 = document.getElementById("frequence_consommation_legume");
@@ -101,9 +105,10 @@ function main() {
 	const button5 = document.getElementById("age");
 	const button6 = document.getElementById("matiere_grasse");
 
+	// Button for toggling color-blind mode
 	const colorToggleButton = document.getElementById("toggleButton");
 
-	//Legend for the x axis
+	// Legend for the x-axis
 	const xLabel = svg
 		.append("text")
 		.attr("x", width - 40)
@@ -112,7 +117,8 @@ function main() {
 		.style("font-weight", "600")
 		.text("Age")
 		.style("font-family", "sans-serif");
-	//Legend for the y axis
+
+	// Legend for the y-axis
 	const ylabel = svg
 		.append("text")
 		.attr("x", 10)
@@ -121,10 +127,12 @@ function main() {
 		.style("font-size", "12px")
 		.style("font-family", "sans-serif");
 
-	//Event Handler
+	// Event handler for button clicks
 	function handleClick(event) {
-		// Remove the class from all buttons
+		// prevent default behavior of button
 		event.preventDefault();
+
+		// Remove the "activeVariable" class from all buttons
 		const clickedButton = event.target;
 		var allButtons = document.querySelectorAll("button");
 		allButtons.forEach(function (button) {
@@ -133,14 +141,16 @@ function main() {
 			}
 		});
 
-		// add active class for the clicked button
+		// Add "activeVariable" class to the clicked button
 		event.target.classList.add("activeVariable");
 
+		// Determine the data path based on the clicked button
 		const path = [
 			`${dataPath}/group_${event.target.id}_femme.csv`,
 			`${dataPath}/group_${event.target.id}_homme.csv`,
 		];
-		console.log(event.target.id);
+
+		// Update the x-axis label and y-axis legend based on the clicked button
 		xLabel.text(event.target.textContent);
 		switch (event.target.id) {
 			case "activite_physique":
@@ -166,12 +176,10 @@ function main() {
 				break;
 		}
 
-		// Parse the Data
+		// Parse the data and update the visualization
 		path.forEach((path, index) => {
 			d3.csv(path).then(function (data) {
-				// List of subgroups = header of the csv files = soil condition here
 				const subgroups = data.columns.slice(1);
-				// List of groups = species here = value of the first column called group -> I show them on the X axis
 				const groups = data.map((d) => d[data.columns[0]]);
 
 				// Add X axis
@@ -202,15 +210,13 @@ function main() {
 					}
 					return total;
 				};
-				// console.log(data);
-				// Call the function with your array of objects
+
 				const max_count = findMaxValue(data);
 				const y = d3
 					.scaleLinear()
 					.domain([0, max_count + 4])
 					.range([height, 0]);
 
-				// color palette = one color per subgroup
 				const color = d3
 					.scaleOrdinal()
 					.domain(subgroups)
@@ -426,9 +432,6 @@ const toggleDarkMode = (e) => {
 
 /////////////////////////////////////////////////////////
 /////////////// The Radar Chart Function ////////////////
-/////////////// Written by Nadieh Bremer ////////////////
-////////////////// VisualCinnamon.com ///////////////////
-/////////// Inspired by the code of alangrafu ///////////
 /////////////////////////////////////////////////////////
 
 const all_data = [
