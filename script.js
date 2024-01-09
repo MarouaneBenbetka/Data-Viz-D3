@@ -934,8 +934,16 @@ function RadarChart(id, data, options) {
 		.style("fill", "none")
 		.style("pointer-events", "all")
 		.on("mouseover", function (d, i) {
-			newX = parseFloat(d3_old.select(this).attr("cx")) + 20;
-			newY = parseFloat(d3_old.select(this).attr("cy")) + 20;
+			console.log(d);
+			if (
+				["Age", "Physical Activity", "Sitting Time"].includes(d?.axis)
+			) {
+				newX = parseFloat(d3_old.select(this).attr("cx")) + 20;
+				newY = parseFloat(d3_old.select(this).attr("cy")) + 10;
+			} else {
+				newX = parseFloat(d3_old.select(this).attr("cx")) - 40;
+				newY = parseFloat(d3_old.select(this).attr("cy")) - 10;
+			}
 
 			tooltip
 				.attr("x", newX)
