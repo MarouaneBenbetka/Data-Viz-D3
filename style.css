@@ -1,11 +1,26 @@
 body {
 	font-family: "Montserrat", sans-serif;
+	min-width: 1000px;
+	overflow-x: auto;
 }
 body.dark {
 	background-color: #343338;
 }
-body.dark h1 {
+body.dark h1,
+body.dark h3 {
 	color: white;
+}
+
+span {
+	color: black;
+}
+
+body.dark span {
+	color: white;
+}
+
+.tooltip {
+	background-color: white;
 }
 
 rect {
@@ -90,14 +105,17 @@ p {
 				background-color: #2ecc71;
 			} */
 
-#barchart-container,
-#pie-container {
+#barchart-container {
 	padding: 20px 56px;
 	border: 1px solid black;
 	margin: 10px;
 	min-width: 650px;
 
 	width: 40vw;
+}
+
+.dark #barchart-container {
+	border-color: transparent;
 }
 
 #my_dataviz {
@@ -213,4 +231,46 @@ h2 {
 }
 .dark h2 {
 	color: white;
+}
+
+.feedback {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: 8px;
+	background-color: #2ecc71;
+	color: white;
+	border-radius: 5px 0 0 0;
+	text-decoration: none;
+	transition: all;
+}
+
+.feedback:hover {
+	background-color: #27ae60;
+	scale: 0.95;
+}
+
+.color-key {
+	font-size: 12px;
+}
+
+.color-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.color-box {
+	width: 12px;
+	height: 12px;
+	display: inline-block;
+	margin-right: 5px;
+	vertical-align: middle;
+	border-radius: 2px;
+	transition: all 0.3s ease;
+	transition-delay: 0.2s;
+}
+
+.color-label {
+	display: inline-block;
+	vertical-align: middle;
 }

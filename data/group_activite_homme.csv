@@ -1,5 +1,5 @@
 activite,Asthma,Diabetes,Hypertension,None,Others
-Employé(e) dans le privé,0,4,1,4,0
-Employé(e) de l’Etat,0,2,3,7,1
-chomeur(se),0,1,0,0,0
-étudiant,2,9,10,13,2
+Private Employee,0,4,1,4,0
+Government Employee,0,2,3,7,1
+Unemployed,0,1,0,0,0
+Student,2,9,10,13,2

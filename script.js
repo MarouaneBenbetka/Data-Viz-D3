@@ -144,35 +144,25 @@ function main() {
 		xLabel.text(event.target.textContent);
 		switch (event.target.id) {
 			case "activite_physique":
-				ylabel.text(
-					"Distribution des personnes selon l'activité physique"
-				);
+				ylabel.text("Physical Activity Distribution");
 				break;
 			case "frequence_consommation_fruit":
-				ylabel.text(
-					"Distribution des personnes selon la frequence du consommation des fruits "
-				);
+				ylabel.text("Fruit Consumption Frequency Distribution");
 				break;
 			case "frequence_consommation_legume":
-				ylabel.text(
-					"Distribution des personnes selon la frequence consommation des legumes"
-				);
+				ylabel.text("Vegetable Consumption Frequency Distribution");
 				break;
 			case "activite":
-				ylabel.text(
-					"Distribution des personnes selon l'activite occupée"
-				);
+				ylabel.text("Occupation Distribution");
 				break;
 			case "age":
-				ylabel.text("Distribution des personnes selon l'age");
+				ylabel.text("Age Distribution");
 				break;
 			case "matiere_grasse":
-				ylabel.text(
-					"Distribution des personnes selon la matiere grasse"
-				);
+				ylabel.text("Fat Consumption Distribution");
 				break;
 			default:
-				ylabel.text("Distribution des personnes selon l'activite");
+				ylabel.text("Activity Distribution");
 				break;
 		}
 
@@ -399,6 +389,14 @@ function main() {
 			colorBlind = true;
 		} else {
 			colorBlind = false;
+		}
+
+		// change color in diagram key of colors
+		const colorsPallete = colorBlind ? colorsBlindPeople : colorsNormal;
+		for (let i = 0; i < colorsPallete.length; i++) {
+			document.querySelector(
+				`.color-box.color-${i + 1}`
+			).style.backgroundColor = colorsPallete[i];
 		}
 
 		mainRadarChart(maladieSelectedIndex);
@@ -791,7 +789,7 @@ function RadarChart(id, data, options) {
 		.attr("dy", "0.35em")
 		.attr("x", function (d, i) {
 			return (
-				rScale(maxValue * cfg.labelFactor) *
+				rScale((maxValue + 0.3) * cfg.labelFactor) *
 				Math.cos(angleSlice * i - Math.PI / 2)
 			);
 		})
@@ -933,8 +931,8 @@ function RadarChart(id, data, options) {
 		.style("fill", "none")
 		.style("pointer-events", "all")
 		.on("mouseover", function (d, i) {
-			newX = parseFloat(d3_old.select(this).attr("cx")) - 10;
-			newY = parseFloat(d3_old.select(this).attr("cy")) - 20;
+			newX = parseFloat(d3_old.select(this).attr("cx")) + 20;
+			newY = parseFloat(d3_old.select(this).attr("cy")) + 20;
 
 			tooltip
 				.attr("x", newX)
@@ -946,7 +944,9 @@ function RadarChart(id, data, options) {
 				)
 				.transition()
 				.duration(200)
-				.style("opacity", 1);
+				.style("opacity", 1)
+				.style("font-size", "10px")
+				.style("font-weight", "600");
 		})
 		.on("mouseout", function () {
 			tooltip.transition().duration(200).style("opacity", 0);
