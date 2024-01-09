@@ -137,6 +137,7 @@ p {
 	margin-top: 50px;
 	height: calc(100vh - 100px);
 	min-height: 600px;
+	width: fit-content;
 }
 
 .variable {
@@ -214,7 +215,7 @@ g text {
 }
 
 .left-section {
-	max-width: 400px;
+	width: 400px;
 }
 
 .text-maladie {
