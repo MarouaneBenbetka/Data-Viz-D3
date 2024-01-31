@@ -9,8 +9,6 @@ For each variable, we have incorporated a **stacked bar chart** illustrating the
 Visualization encompasses three stages of perception: parallel processing for basic features, active pattern perception, and the reduction to retained objects in visual memory, all intricately linked with issues of perception and cognition, based that we tried to design this website to be easily interpreted.
 This approach works with multiple charts, which makes it generalizable.
 
-We tried to find the most appropriate HSL colors to respect the visual encoding principles.
-
 #### Color Codes and Explanations for Different Medical Conditions
 
 | Medical Condition   | Hex Color | Explanation |
